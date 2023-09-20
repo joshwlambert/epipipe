@@ -14,6 +14,64 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
-library(epipipe)
+# Outline of the report
+
+This report explains necessary data preparation processes after importing a line list data frame.\
+
+## Loading libraries
+
+The following code loads required packages; missing packages will be installed
+automatically, but will require a working internet connection for the
+installation to be successful.
+
+```{r setup, message = FALSE}
+#library(epipipe)
+library(dplyr)
+library(linelist)
+#library(EpiNow2)
+```
+
+
+## Input data
+
+In this example, we will use a line list data extracted from Go.Data API.
+While the example data set is already cleaned, it is important to make sure you have applied necessary data cleaning steps such as:  
+
+* Column names are cleaned and standardized
+* Data types are properly assigned
+* Missing / duplicated values are treated
+* Categorical values are cleaned
+
+
+
+```{r}
+# Go.Data extract as an example for now
+case_ll <- readRDS("data/Go.Data exports/cases_clean.rds")
+
+head(case_ll)
+```
+
+
+## Format the date columns properly - compute date of onset if missing??
+
+```{r}
+case_ll <- case_ll %>%
+  mutate(
+    date_of_onset = ifelse(is.na(date_of_onset), date_of_reporting, date_of_onset)
+  ) %>%
+  mutate(across(starts_with("date_"), ~as.Date(.x)))
+```
+
+
+
+## Apply necessary aggregation and rename
+
+**EpiNow2** requires the column names to be `date` and `confirm`.
+
+```{r}
+cases <- case_ll %>%
+  group_by(date = date_of_onset) %>%
+  summarise(confirm = n())
+
+head(cases)
 ```
