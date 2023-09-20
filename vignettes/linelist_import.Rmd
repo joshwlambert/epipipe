@@ -1,0 +1,103 @@
+# DATA IMPORT STEP.
+
+# install or load packages
+pacman::p_load(rio, 
+               here,
+               tidyverse)
+
+##################################
+# Option 1. locally stored excel
+##################################
+
+# import
+linelist <- import(here("data","MSF_linelist.xlsx"))
+
+# rename df and vars
+
+##################################
+# Option 2. godata via godataR
+##################################
+
+# Install godataR package
+devtools::install_github("WorldHealthOrganization/godataR")
+library(godataR)
+library(getPass)
+
+# Set Go.Data login credentials:
+
+## Your Go.Data URL
+## this should match whatever is the your Go.Data URL. the below a URL to a demo instance with fake data.
+url <- "https://godata-r19.who.int/" 
+
+
+## Your email address to log in to Go.Data
+
+username <- getPass::getPass(msg = "Enter your Go.Data username (email address):") 
+## you can use testuser7@who.int
+
+# Your password to log in to Go.Data
+## a pop-up box will appear for you to enter your pw
+password <- getPass::getPass(msg = "Enter your Go.Data password:") 
+## you can use godatatrombonestaple
+
+
+# Get and clean case data from Go.Data API
+
+# within outbreak API endpoint so this also requires getting active outbreak ID for disease of interest
+# a few other cleaning steps that are a natural next step after data extraction
+
+
+# Get ID for active outbreak:
+outbreak_id <- godataR::get_active_outbreak(url = url, 
+                                            username = username, 
+                                            password = password)
+
+cases <- get_cases(
+  url = url,
+  username = username,
+  password = password,
+  outbreak_id = outbreak_id)
+
+language_tokens <- get_language_tokens(
+  url = url,
+  username = username,
+  password = password,
+  language = "english_us")
+
+locations <- get_locations(
+  url = url,
+  username = username,
+  password = password)
+
+locations_clean <- clean_locations(
+                        locations = locations,
+                        language_tokens = language_tokens)
+
+# other cleaned data required for `clean_cases()`
+# these below are nested data and we are bringing in only one row per case.
+cases_vacc_history_clean <- clean_case_vax_history(
+                              cases = cases,
+                              language_tokens = language_tokens)
+
+
+cases_address_history_clean <- clean_case_address_history(
+  cases = cases,
+  locations_clean = locations_clean,
+  language_tokens = language_tokens)
+
+cases_dateranges_history_clean <- clean_case_med_history(
+  cases = cases,
+  language_tokens = language_tokens)
+
+cases_clean <- clean_cases(
+  cases = cases,
+  cases_address_history_clean = cases_address_history_clean,
+  cases_vacc_history_clean = cases_vacc_history_clean,
+  cases_dateranges_history_clean = cases_dateranges_history_clean,
+  language_tokens = language_tokens
+)
+
+
+##################################
+# Option 3. other??
+##################################
