@@ -2,6 +2,7 @@
 # epipipe
 
 <!-- badges: start -->
+[![R-CMD-check](https://github.com/joshwlambert/epipipe/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/joshwlambert/epipipe/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 The goal of epipipe is to document how to build epidemiological pipelines. The 
