@@ -16,6 +16,9 @@ knitr::opts_chunk$set(
 
 
 
+
+# Outline of the report
+
 # Step 2: Line list aggregation
 
 This report explains necessary data preparation processes after importing a line list data frame.\
@@ -123,6 +126,3 @@ cases <- cases_clean %>% filter(!is.na(admin_1_name)) %>%
 
 head(cases)
 ```
-
-
-
