@@ -1,0 +1,10 @@
+pandoc: 2.19.2
+pkgdown: 2.0.7
+pkgdown_sha: ~
+articles:
+  linelist_aggregation: linelist_aggregation.html
+last_built: 2023-09-21T08:31Z
+urls:
+  reference: https://joshwlambert.github.io/epipipe/reference
+  article: https://joshwlambert.github.io/epipipe/articles
+
