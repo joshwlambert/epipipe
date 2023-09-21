@@ -49,3 +49,4 @@ Suggests:
     knitr,
     rmarkdown
 VignetteBuilder: knitr
+URL: https://joshwlambert.github.io/epipipe/
