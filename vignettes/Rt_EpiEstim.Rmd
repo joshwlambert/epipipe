@@ -26,7 +26,7 @@ library(ggplot2)
 ```{r rt-wrappers-prep}
 
 # Function to process output from `EpiEstim::estimate_R` and output a tibble
-# with dates, mean R, and associated confidence intervals
+# with dates, mean R, and 95% credible intervals
 #'
 #' @param x An `estimate_R` object
 #' @param incid (Optional) The incidence2 object on which R values have been
@@ -77,12 +77,12 @@ without stratification. As a default these will be estimated on weekly sliding
 windows.
 
 ```{r rt-estim-global}
-res_epiestim_global <- dat_i_day |>
+res_epiestim_global <- cases_clean |>
   incidence2::regroup() |>
   incidence2::get_count_value() |>
   EpiEstim::estimate_R(method = "parametric_si",
                        config = config_epiestim) |>
-  wrap_res(dat_i_day)
+  wrap_res(cases_clean)
 ```
 We plot Rt, showing the median as a dark green line and the 95% credible
 interval is represented by a pale green area. Values are plotted at the end date
@@ -132,7 +132,7 @@ We now run EpiEstim to estimate Rt again, but this time keep the data stratified
 into groups and calculate Rt for each group based on the incidence in that
 group.
 ```{r rt-estim-group}
-res_epiestim_group <- dat_i_day |>
+res_epiestim_group <- cases_clean |>
   tidyr::nest(data = c(incidence2::get_date_index_name(.),
                        incidence2::get_count_value_name(.))) |>
   dplyr::mutate(
@@ -140,7 +140,7 @@ res_epiestim_group <- dat_i_day |>
       EpiEstim::estimate_R(.x$count,
                            method = "parametric_si",
                            config = config_epiestim),
-      dat_i_day)
+      cases_clean)
     )
   ) |>
   tidyr::unnest(res_epiestim) |>
@@ -178,7 +178,7 @@ res_epiestim_group |>
       title = "Latest estimates of Rt",
       subtitle = sprintf(
         "As of %s",
-        format(max(get_dates(dat_i_day)), "%d %B %Y")
+        format(max(get_dates(cases_clean)), "%d %B %Y")
       ),
       y = "",
       x = "Instantaneous Reproduction Number (Rt)"
