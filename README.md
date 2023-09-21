@@ -17,6 +17,8 @@ together the examples we provide.
 _epipipe_ provides and documents _"glue"_ code that links together R packages and methods that
 are not natively interoperable.
 
+See the [Get Started vignette](https://joshwlambert.github.io/epipipe/articles/epipipe.html) for an explanation of how the package works and which vignettes can be combined to create an analysis pipeline.
+
 The _epipipe_ package is a complementary resource to the [The Epidemiological R Handbook](https://epirhandbook.com/en/).
 
 ## Installation
