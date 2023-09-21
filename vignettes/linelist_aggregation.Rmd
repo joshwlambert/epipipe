@@ -16,9 +16,19 @@ knitr::opts_chunk$set(
 
 
 
-# Outline of the report
+# Step 2: Line list aggregation
 
 This report explains necessary data preparation processes after importing a line list data frame.\
+
+**Input**
+
+* Case data in a line list format (**`cases_clean.rds`**) produced in the previous step ([link](...)).
+
+
+**output**
+
+* Case incidence grouped by time interval (**`cases.rds`**)
+
 
 ## Loading libraries
 
@@ -27,10 +37,8 @@ automatically, but will require a working internet connection for the
 installation to be successful.
 
 ```{r setup, message = FALSE}
-#library(epipipe)
-library(dplyr)
-library(linelist)
-#library(EpiNow2)
+library(dplyr) # For data wrangling
+library(incidence2) # For generating incidence data
 ```
 
 
@@ -47,17 +55,20 @@ While the example data set is already cleaned, it is important to make sure you 
 
 
 ```{r}
-# Go.Data extract as an example for now
-case_ll <- readRDS("data/Go.Data exports/cases_clean.rds")
+# Go.Data extract as an example
+cases_clean <- readRDS("data/Go.Data exports/cases_clean.rds")
 
-head(case_ll)
+head(cases_clean)
 ```
 
 
-## Format the date columns properly - compute date of onset if missing??
+## Format the date columns properly
+
+You will need one date index column to produce the aggregated incidence output.
+While this is optional, in this example, since we have `nrow(cases_clean[is.na(cases_clean$date_of_onset),])` out of `nrow(cases_clean)` cases without any `date_of_osnet` values, we will compliment this with the `date_of_reporting` value.
 
 ```{r}
-case_ll <- case_ll %>%
+cases_clean <- cases_clean %>%
   mutate(
     date_of_onset = ifelse(is.na(date_of_onset), date_of_reporting, date_of_onset)
   ) %>%
@@ -68,13 +79,50 @@ case_ll <- case_ll %>%
 
 ## Apply necessary aggregation and rename
 
-**EpiNow2** requires the column names to be `date` and `confirm`.
+We will convert this into a time-indexed grouped data frame with three columns:  
+
+* `date_index` - This is the time index for your analysis (eg. date of infection, onset of symptoms, reporting...)
+* `group` - Any grouping variable you might need (eg. places, age groups)
+* `count` - Counts of observations per time and group
+
+
+There are two ways of achieving this step as follows.
+
+
+### Option 1: Using `incidence()` function from the _incidence2_ package.
+In this method, the output will be in an **incidence2** class object. With this, you can also simply plot your incidence data.
+See more information on the _incidence2_ package [here](https://cran.r-project.org/web/packages/incidence2/vignettes/incidence2.html).
 
 ```{r}
-cases <- case_ll %>%
-  group_by(date = date_of_onset) %>%
-  summarise(confirm = n())
+# Generate the incidence object
+cases <- incidence(cases_clean %>% filter(!is.na(admin_1_name)), 
+                   groups = "admin_1_name", 
+                   date_index = "date_of_onset")
+  
+# Rename necessary columns
+cases <- cases %>%
+  rename(group = admin_1_name)
+
 
 head(cases)
 ```
+```{r}
+plot(cases)
+```
+
+
+
+### Option 2: Using `group_by()` function from the _dplyr_ package.
+
+In this method, your output will be a data frame object.
+
+```{r}
+cases <- cases_clean %>% filter(!is.na(admin_1_name)) %>%
+  group_by(date_index=date_of_onset, group=admin_1_name) %>%
+  summarise(count = n())
+
+head(cases)
+```
+
+
 
