@@ -33,7 +33,7 @@ Authors@R:
             family = "Izawa",
             role = c("aut", "cph"),
             email = "izaway@who.int"
-        ),
+        )
       )
 Description: A library of documentation for building epidemiological pipelines 
     by piecing together vignettes which contain code that links package and
@@ -43,6 +43,8 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.2.3
+Depends:
+    R (>= 4.1.0)
 Suggests: 
     knitr,
     rmarkdown
