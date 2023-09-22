@@ -14,9 +14,6 @@ knitr::opts_chunk$set(
 )
 ```
 
-
-
-
 # Outline of the report
 
 # Step 2: Line list aggregation
@@ -39,7 +36,7 @@ The following code loads required packages; missing packages will be installed
 automatically, but will require a working internet connection for the
 installation to be successful.
 
-```{r setup, message = FALSE}
+```{r setup, message = FALSE, eval=FALSE}
 library(dplyr) # For data wrangling
 library(incidence2) # For generating incidence data
 ```
@@ -57,7 +54,7 @@ While the example data set is already cleaned, it is important to make sure you 
 
 
 
-```{r}
+```{r, eval=FALSE}
 # Go.Data extract as an example
 cases_clean <- readRDS("data/Go.Data exports/cases_clean.rds")
 
@@ -70,7 +67,7 @@ head(cases_clean)
 You will need one date index column to produce the aggregated incidence output.
 While this is optional, in this example, since we have `nrow(cases_clean[is.na(cases_clean$date_of_onset),])` out of `nrow(cases_clean)` cases without any `date_of_osnet` values, we will compliment this with the `date_of_reporting` value.
 
-```{r}
+```{r, eval=FALSE}
 cases_clean <- cases_clean %>%
   mutate(
     date_of_onset = case_when(
@@ -97,7 +94,7 @@ There are two ways of achieving this step as follows.
 In this method, the output will be in an **incidence2** class object. With this, you can also simply plot your incidence data.
 See more information on the _incidence2_ package [here](https://cran.r-project.org/web/packages/incidence2/vignettes/incidence2.html).
 
-```{r}
+```{r, eval=FALSE}
 # Generate the incidence object
 cases <- incidence(cases_clean %>% filter(!is.na(admin_1_name)), 
                    groups = "admin_1_name", 
@@ -110,17 +107,16 @@ cases <- cases %>%
 
 head(cases)
 ```
-```{r}
+
+```{r, eval=FALSE}
 plot(cases)
 ```
-
-
 
 ### Option 2: Using `group_by()` function from the _dplyr_ package.
 
 In this method, your output will be a data frame object.
 
-```{r}
+```{r, eval=FALSE}
 cases <- cases_clean %>% filter(!is.na(admin_1_name)) %>%
   group_by(date_index=date_of_onset, group=admin_1_name) %>%
   summarise(count = n())

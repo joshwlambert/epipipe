@@ -1,28 +1,33 @@
-# DATA IMPORT STEP.
+# Data Import
 
+```{r, eval=FALSE}
 # install or load packages
 pacman::p_load(rio, 
                here,
                tidyverse)
+```
 
-##################################
-# Option 1. locally stored excel
-##################################
 
+## Option 1. locally stored excel
+
+```{r, eval=FALSE}
 # import
 linelist <- import(here("data","MSF_linelist.xlsx"))
 
 # rename df and vars
+```
 
-##################################
-# Option 2. godata via godataR
-##################################
 
+## Option 2. godata via godataR
+
+```{r, eval=FALSE}
 # Install godataR package
 devtools::install_github("WorldHealthOrganization/godataR")
 library(godataR)
 library(getPass)
+```
 
+```{r, eval=FALSE}
 # Set Go.Data login credentials:
 
 ## Your Go.Data URL
@@ -96,8 +101,7 @@ cases_clean <- clean_cases(
   cases_dateranges_history_clean = cases_dateranges_history_clean,
   language_tokens = language_tokens
 )
+```
 
 
-##################################
-# Option 3. other??
-##################################
+## Option 3. other??
