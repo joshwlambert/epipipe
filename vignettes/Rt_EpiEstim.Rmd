@@ -1,0 +1,209 @@
+---
+title: "Rt_EpiEstim"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Rt_EpiEstim}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(EpiEstim)
+library(ggplot2)
+```
+
+### Explanations
+
+### Results
+
+```{r rt-wrappers-prep}
+
+# Function to process output from `EpiEstim::estimate_R` and output a tibble
+# with dates, mean R, and 95% credible intervals
+#'
+#' @param x An `estimate_R` object
+#' @param incid (Optional) The incidence2 object on which R values have been
+#'   estimated.
+wrap_res <- function(x, incid = NULL) {
+  stopifnot(inherits(x, "estimate_R"))
+  out <- tibble::tibble(x$R)
+  out <- dplyr::select(out,
+    start = t_start,
+    end = t_end,
+    mean = `Mean(R)`,
+    sd = `Std(R)`,
+    median = `Median(R)`,
+    lower = `Quantile.0.025(R)`,
+    upper = `Quantile.0.975(R)`
+  )
+  if (!is.null(incid)) {
+    stopifnot(inherits(incid, "incidence2"))
+    dates <- unique(incidence2::get_dates(incid))
+    out$start <- dates[out$start]
+    out$end <- dates[out$end]
+  }
+
+  class(out) <- c("R_estimate", class(out))
+  out
+}
+```
+
+
+#### Serial interval settings
+
+Here we setup the serial interval settings for EpiEstim to use, we will assume a
+mean of 4.2 and standard deviation of 4.9, using the `"parametric_si"` method in
+EpiEstim.
+```{r rt-estim-si}
+# Run EpiEstim
+config_epiestim <- EpiEstim::make_config(mean_si = 4.2,
+                                         std_si = 4.9)
+```
+
+#### Global transmissibility
+
+These analyses present results for the global incidence, i.e. without
+stratification. Results include:
+ 
+We now use EpiEstim to estimate Rt for the global incidence, i.e.
+without stratification. As a default these will be estimated on weekly sliding
+windows.
+
+```{r rt-estim-global}
+res_epiestim_global <- cases_clean |>
+  incidence2::regroup() |>
+  incidence2::get_count_value() |>
+  EpiEstim::estimate_R(method = "parametric_si",
+                       config = config_epiestim) |>
+  wrap_res(cases_clean)
+```
+We plot Rt, showing the median as a dark green line and the 95% credible
+interval is represented by a pale green area. Values are plotted at the end date
+for each of the weekly sliding windows.
+
+```{r rt-plot-global}
+# Graph of all values over time
+ggplot(res_epiestim_global, aes(x = end)) +
+  geom_ribbon(aes(ymin = lower, ymax = upper), fill = pale_green) +
+  geom_line(aes(y = median), color = dark_green) +
+  geom_hline(yintercept = 1, color = dark_pink) +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
+  labs(
+    x = "",
+    y = "Instantaneous reproduction number (Rt)",
+    title = "Estimates of Rt (EpiEstim)"
+  )
+```
+We output a table giving the mean, median and 95% credible intervals, reporting
+by the end date of each weekly sliding window.
+```{r rt-table-global}
+# Table
+res_epiestim_global |>
+  tail(params$r_estim_window) |>
+  dplyr::mutate(
+    date = end,
+    mean = round(mean, 2),
+    median = round(median, 2),
+    `95% ci` = sprintf(
+      "[%1.2f ; %1.2f]",
+      lower,
+      upper
+    )
+  ) |>
+  dplyr::select(date, mean, median, `95% ci`) |>
+  dplyr::rename(
+    "mean $R$" = mean,
+    "median $R$" = median
+  ) |>
+  purrr::set_names(toupper) |>
+  kableExtra::kbl() |>
+  kableExtra::kable_paper("striped", font_size = 18, full_width = FALSE)
+```
+
+#### Transmissibility by group
+We now run EpiEstim to estimate Rt again, but this time keep the data stratified
+into groups and calculate Rt for each group based on the incidence in that
+group.
+```{r rt-estim-group}
+res_epiestim_group <- cases_clean |>
+  tidyr::nest(data = c(incidence2::get_date_index_name(.),
+                       incidence2::get_count_value_name(.))) |>
+  dplyr::mutate(
+    res_epiestim = map(data, ~ wrap_res(
+      EpiEstim::estimate_R(.x$count,
+                           method = "parametric_si",
+                           config = config_epiestim),
+      cases_clean)
+    )
+  ) |>
+  tidyr::unnest(res_epiestim) |>
+  dplyr::select(-data)
+```
+We plot Rt for each group, showing the median as a dark green line and the 95%
+credible interval is represented by a pale green area. Values are plotted at the
+end date for each of the weekly sliding windows.
+```{r rt-plot-group, fig.height = 5 / 3 * n_groups}
+# Graph of all values over time
+ggplot(res_epiestim_group, aes(x = end)) +
+  geom_ribbon(aes(ymin = lower, ymax = upper), fill = pale_green) +
+  geom_line(aes(y = median), color = dark_green) +
+  geom_hline(yintercept = 1, color = dark_pink) +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
+  facet_wrap(~ .data[[group_var]], ncol = 1) +
+  labs(
+    x = "",
+    y = "Instantaneous reproduction number (Rt)",
+    title = "Estimates of Rt (EpiEstim)"
+  )
+```
+Here we produce a whiskers plot of the latest estimate of Rt (i.e. for the final
+weekly rolling window) for each region, with dots representing the median and
+the whiskers the 95% credible intervals.
+```{r rt-plot-estimates-group}
+# Plot of latest estimates
+res_epiestim_group |>
+  dplyr::filter(end == max(end)) |>
+  ggplot(aes(y = .data[[group_var]]), fill = custom_grey) +
+    geom_point(aes(x = median), color = dark_green) +
+    geom_errorbar(aes(xmin = lower, xmax = upper), color = dark_green) +
+    geom_vline(xintercept = 1, color = dark_pink) +
+    labs(
+      title = "Latest estimates of Rt",
+      subtitle = sprintf(
+        "As of %s",
+        format(max(get_dates(cases_clean)), "%d %B %Y")
+      ),
+      y = "",
+      x = "Instantaneous Reproduction Number (Rt)"
+    )
+```
+Now we present the estimates of Rt by region for the final weekly rolling window
+in a table, giving the mean, median and 95% credible interval.
+```{r rt-table-group}
+res_epiestim_group |>
+  dplyr::filter(end == max(end)) |>
+  dplyr::mutate(
+    mean = round(mean, 2),
+    median = round(median, 2),
+    `95% ci` = sprintf(
+      "[%1.2f ; %1.2f]",
+      lower,
+      upper
+    )
+  ) |>
+  dplyr::select(-c(sd, lower, upper, count_variable)) |>
+  dplyr::rename(
+    "mean $R$" = mean,
+    "median $R$" = median
+  ) %>%
+  purrr::set_names(toupper) |>
+  kableExtra::kbl() |>
+  kableExtra::kable_paper("striped", font_size = 18, full_width = FALSE)
+```
