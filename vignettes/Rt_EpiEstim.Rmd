@@ -14,7 +14,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
+```{r, setup, eval=FALSE}
 library(EpiEstim)
 library(ggplot2)
 ```
@@ -23,7 +23,7 @@ library(ggplot2)
 
 ### Results
 
-```{r rt-wrappers-prep}
+```{r, rt-wrappers-prep, eval=FALSE}
 
 # Function to process output from `EpiEstim::estimate_R` and output a tibble
 # with dates, mean R, and 95% credible intervals
@@ -61,7 +61,7 @@ wrap_res <- function(x, incid = NULL) {
 Here we setup the serial interval settings for EpiEstim to use, we will assume a
 mean of 4.2 and standard deviation of 4.9, using the `"parametric_si"` method in
 EpiEstim.
-```{r rt-estim-si}
+```{r, rt-estim-si, eval=FALSE}
 # Run EpiEstim
 config_epiestim <- EpiEstim::make_config(mean_si = 4.2,
                                          std_si = 4.9)
@@ -76,7 +76,7 @@ We now use EpiEstim to estimate Rt for the global incidence, i.e.
 without stratification. As a default these will be estimated on weekly sliding
 windows.
 
-```{r rt-estim-global}
+```{r, rt-estim-global, eval=FALSE}
 res_epiestim_global <- cases_clean |>
   incidence2::regroup() |>
   incidence2::get_count_value() |>
@@ -88,7 +88,7 @@ We plot Rt, showing the median as a dark green line and the 95% credible
 interval is represented by a pale green area. Values are plotted at the end date
 for each of the weekly sliding windows.
 
-```{r rt-plot-global}
+```{r, rt-plot-global, eval=FALSE}
 # Graph of all values over time
 ggplot(res_epiestim_global, aes(x = end)) +
   geom_ribbon(aes(ymin = lower, ymax = upper), fill = pale_green) +
@@ -103,7 +103,7 @@ ggplot(res_epiestim_global, aes(x = end)) +
 ```
 We output a table giving the mean, median and 95% credible intervals, reporting
 by the end date of each weekly sliding window.
-```{r rt-table-global}
+```{r, rt-table-global, eval=FALSE}
 # Table
 res_epiestim_global |>
   tail(params$r_estim_window) |>
@@ -131,7 +131,7 @@ res_epiestim_global |>
 We now run EpiEstim to estimate Rt again, but this time keep the data stratified
 into groups and calculate Rt for each group based on the incidence in that
 group.
-```{r rt-estim-group}
+```{r, rt-estim-group, eval=FALSE}
 res_epiestim_group <- cases_clean |>
   tidyr::nest(data = c(incidence2::get_date_index_name(.),
                        incidence2::get_count_value_name(.))) |>
@@ -146,10 +146,12 @@ res_epiestim_group <- cases_clean |>
   tidyr::unnest(res_epiestim) |>
   dplyr::select(-data)
 ```
+
 We plot Rt for each group, showing the median as a dark green line and the 95%
 credible interval is represented by a pale green area. Values are plotted at the
 end date for each of the weekly sliding windows.
-```{r rt-plot-group, fig.height = 5 / 3 * n_groups}
+
+```{r, rt-plot-group, eval=FALSE}
 # Graph of all values over time
 ggplot(res_epiestim_group, aes(x = end)) +
   geom_ribbon(aes(ymin = lower, ymax = upper), fill = pale_green) +
@@ -163,10 +165,11 @@ ggplot(res_epiestim_group, aes(x = end)) +
     title = "Estimates of Rt (EpiEstim)"
   )
 ```
+
 Here we produce a whiskers plot of the latest estimate of Rt (i.e. for the final
 weekly rolling window) for each region, with dots representing the median and
 the whiskers the 95% credible intervals.
-```{r rt-plot-estimates-group}
+```{r, rt-plot-estimates-group, eval=FALSE}
 # Plot of latest estimates
 res_epiestim_group |>
   dplyr::filter(end == max(end)) |>
@@ -186,7 +189,7 @@ res_epiestim_group |>
 ```
 Now we present the estimates of Rt by region for the final weekly rolling window
 in a table, giving the mean, median and 95% credible interval.
-```{r rt-table-group}
+```{r, rt-table-group, eval=FALSE}
 res_epiestim_group |>
   dplyr::filter(end == max(end)) |>
   dplyr::mutate(
