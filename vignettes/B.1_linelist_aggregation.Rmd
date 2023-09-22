@@ -73,9 +73,10 @@ While this is optional, in this example, since we have `nrow(cases_clean[is.na(c
 ```{r}
 cases_clean <- cases_clean %>%
   mutate(
-    date_of_onset = ifelse(is.na(date_of_onset), date_of_reporting, date_of_onset)
-  ) %>%
-  mutate(across(starts_with("date_"), ~as.Date(.x)))
+    date_of_onset = case_when(
+      is.na(date_of_onset) ~ date_of_reporting,
+      TRUE ~ date_of_onset)
+  )
 ```
 
 
