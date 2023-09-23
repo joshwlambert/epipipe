@@ -56,7 +56,7 @@ While the example data set is already cleaned, it is important to make sure you 
 
 ```{r, eval=FALSE}
 # Go.Data extract as an example
-cases_clean <- readRDS("data/Go.Data exports/cases_clean.rds")
+cases_clean <- readRDS("data/godata_exports/cases_clean.rds")
 
 head(cases_clean)
 ```
