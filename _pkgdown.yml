@@ -2,3 +2,27 @@ url: https://joshwlambert.github.io/epipipe/
 template:
   bootstrap: 5
 
+articles:
+- title: Import
+  navbar: Import
+  contents:
+  - import_linelist
+
+- title: Transform
+  navbar: Transform
+  contents:
+  - transform_linelist_aggregation
+
+- title: Analyse
+  navbar: Analyse
+  contents:
+  - analyse_rt_EpiEstim
+
+- title: Other
+  navbar: Other
+  contents:
+  - design_principles
+
+
+
+
