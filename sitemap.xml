@@ -10,13 +10,16 @@
     <loc>https://joshwlambert.github.io/epipipe/LICENSE.html</loc>
   </url>
   <url>
+    <loc>https://joshwlambert.github.io/epipipe/articles/B.1_linelist_aggregation.html</loc>
+  </url>
+  <url>
+    <loc>https://joshwlambert.github.io/epipipe/articles/Rt_EpiEstim.html</loc>
+  </url>
+  <url>
     <loc>https://joshwlambert.github.io/epipipe/articles/epipipe.html</loc>
   </url>
   <url>
     <loc>https://joshwlambert.github.io/epipipe/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>https://joshwlambert.github.io/epipipe/articles/linelist_aggregation.html</loc>
   </url>
   <url>
     <loc>https://joshwlambert.github.io/epipipe/articles/linelist_import.html</loc>
