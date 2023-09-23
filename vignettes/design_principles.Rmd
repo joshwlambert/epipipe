@@ -24,6 +24,12 @@ The code contained in the vignettes is one of the key products of the _epipipe_ 
 
 The goal of _epipipe_ is not to repeat information from individual R packages, but to show how the ecosystem of epidemiological R packages can interconnect to produce pipelines.
 
+_Bricks_ are categorised based on their position in the pipeline. Each vignette is given a prefix to define which category it is in. Current categories are:
+
+- Import (import_*.Rmd)
+- Transform (transform_*.Rmd)
+- Analyse (analyse_*.Rmd)
+
 ## Choice of package
 
 _epipipe_ uses R packages that the contributors of the package have chosen to complete a specific task. These are not picked because they are considered the _"best"_ package for a particular task. We recommend users to explore other packages that may be better suited for their application. _epipipe_ provides a starting point for building functional pipelines, but the modular design should allow for easily replacing packages or code chunks. **Note** the _glue_ code provide by _epipipe_ is only guarenteed to work with the code and functions provided. When switching out a new code chunk, this _glue_ code may need to be rewritten or removed.
