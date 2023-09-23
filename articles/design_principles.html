@@ -44,10 +44,17 @@
 <li class="active nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/B.1_linelist_aggregation.html">linelist_aggregation</a>
-    <a class="dropdown-item" href="../articles/Rt_EpiEstim.html">Rt_EpiEstim</a>
+    <h6 class="dropdown-header" data-toc-skip>Import</h6>
+    <a class="dropdown-item" href="../articles/import_linelist.html">Linelist Data Import</a>
+    <div class="dropdown-divider"></div>
+    <h6 class="dropdown-header" data-toc-skip>Transform</h6>
+    <a class="dropdown-item" href="../articles/transform_linelist_aggregation.html">linelist_aggregation</a>
+    <div class="dropdown-divider"></div>
+    <h6 class="dropdown-header" data-toc-skip>Analyse</h6>
+    <a class="dropdown-item" href="../articles/analyse_rt_EpiEstim.html">Rt_EpiEstim</a>
+    <div class="dropdown-divider"></div>
+    <h6 class="dropdown-header" data-toc-skip>Other</h6>
     <a class="dropdown-item" href="../articles/design_principles.html">Package Design Principles</a>
-    <a class="dropdown-item" href="../articles/linelist_import.html">Linelist Data Import</a>
   </div>
 </li>
       </ul>
@@ -113,6 +120,14 @@ information.</p>
 <p>The goal of <em>epipipe</em> is not to repeat information from
 individual R packages, but to show how the ecosystem of epidemiological
 R packages can interconnect to produce pipelines.</p>
+<p><em>Bricks</em> are categorised based on their position in the
+pipeline. Each vignette is given a prefix to define which category it is
+in. Current categories are:</p>
+<ul>
+<li>Import (import_*.Rmd)</li>
+<li>Transform (transform_*.Rmd)</li>
+<li>Analyse (analyse_*.Rmd)</li>
+</ul>
 </div>
 <div class="section level2">
 <h2 id="choice-of-package">Choice of package<a class="anchor" aria-label="anchor" href="#choice-of-package"></a>
