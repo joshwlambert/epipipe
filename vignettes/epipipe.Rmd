@@ -21,6 +21,8 @@ ensure that units of epidemiological data wrangling or analysis are interoperabl
 _epipipe_ achieves this by providing _"glue"_ code to ensure that packages or 
 functions work together seamlessly. 
 
+If you are new to R we recommend [The Epidemiologist R Handbook chapter on R basics](https://www.epirhandbook.com/en/r-basics.html) as well as the [R for Data Science book](https://r4ds.hadley.nz/). 
+
 _epipipe_ currently contains six vignettes. Three explain how to import 
 linelist data into R. One explains how to clean and aggregate linelist. Two
 explain how to estimate disease transmissibility. The code from each vignette 
