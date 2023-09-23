@@ -1,0 +1,35 @@
+---
+title: "Package Design Principles"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Package Design Principles}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+This vignettes lays out the design principles and coding style used by the _epipipe_ R package and the reasoning for the choices made.
+
+## Structure and Objectives of _epipipe_
+
+The main resource provided in the _epipipe_ package are the vignettes that each guide the user on how to complete a single epidemiological task. We term these units _"bricks"_. Just as with other bricks, e.g. Lego, these can be joined to create a pipeline. An example of a _brick_ is data import. The data import vignette explains how to import data via several commonly used methods. The final produce from this _brick_ is the data loaded and available locally in R. This can be attached to a second _brick_, which could be for example data aggregation. The inputs of data cleaning and wrangling _bricks_ will work with outputs of data import _bricks_. The result is a set of vignettes covering many epidemiological tasks that can be copy and pasted to form bespoke epidemiological pipelines. 
+
+The code contained in the vignettes is one of the key products of the _epipipe_ package. This code can either be handling or analysing data, or what we term _"glue"_ code. _Glue_ code is code written by contributors to _epipipe_ that enables packages or function that do not naturally work together, for example the data output from aggregation is not in the correct format for a function that can estimate $R_t$, to now be interoperable. This takes the burden off the user, who may have varying levels of R experience. The secondary product provided by _epipipe_ is the explanation of each step in vignettes. We strongly believe in explaining what a function or code chunk is doing will enable users of the package to have a better understanding and be in a better position to build and extend robustness pipelines. The vignettes contain lots of links to other resources for further information. 
+
+The goal of _epipipe_ is not to repeat information from individual R packages, but to show how the ecosystem of epidemiological R packages can interconnect to produce pipelines.
+
+## Choice of package
+
+_epipipe_ uses R packages that the contributors of the package have chosen to complete a specific task. These are not picked because they are considered the _"best"_ package for a particular task. We recommend users to explore other packages that may be better suited for their application. _epipipe_ provides a starting point for building functional pipelines, but the modular design should allow for easily replacing packages or code chunks. **Note** the _glue_ code provide by _epipipe_ is only guarenteed to work with the code and functions provided. When switching out a new code chunk, this _glue_ code may need to be rewritten or removed.
+
+We follow many of the packages used by [The Epidemiological R Handbook](). We aim for this package to be a complementary resource to the handbook and therefore making the code examples as similar as possible will hopefully aid users moving between the two resources.
+
+Given its popularity and familiarity to R users and epidemiologists we make frequent use of the [Tidyverse set of R packages](). All plots are made using the [_ggplot2_ R package]().
+
+We use explicit namespacing for all function calls (e.g. `packagename::functionname()`), to be clear which package is function is coming from.
