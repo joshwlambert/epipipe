@@ -50,3 +50,15 @@ Suggests:
     rmarkdown
 VignetteBuilder: knitr
 URL: https://joshwlambert.github.io/epipipe/
+Imports: 
+    epiparameter (>= 0.0.0.9000),
+    simulist (>= 0.1.0.9000),
+    rio,
+    incidence2,
+    fitdistrplus,
+    finalsize,
+    superspreading
+Remotes: 
+    epiverse-trace/simulist,
+    epiverse-trace/epiparameter,
+    epiverse-trace/superspreading
