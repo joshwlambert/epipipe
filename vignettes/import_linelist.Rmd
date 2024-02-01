@@ -118,4 +118,35 @@ cases_clean <- clean_cases(
 ```
 
 
-## Option 3. other??
+## Option 3. Simulate linelist
+
+```{r, eval=FALSE}
+library(epiparameter)
+library(simulist)
+
+serial_interval <- epidist(
+  disease = "COVID-19",
+  epi_dist = "serial interval",
+  prob_distribution = "gamma",
+  prob_distribution_params = c(shape = 1, scale = 1)
+)
+
+onset_to_hosp <- epidist_db(
+  disease = "COVID-19",
+  epi_dist = "onset to hospitalisation",
+  single_epidist = TRUE
+)
+
+onset_to_death <- epidist_db(
+  disease = "COVID-19",
+  epi_dist = "onset to death",
+  single_epidist = TRUE
+)
+
+linelist <- sim_linelist(
+  R = 1.1,
+  serial_interval = serial_interval,
+  onset_to_hosp = onset_to_hosp,
+  onset_to_death = onset_to_death
+)
+```
