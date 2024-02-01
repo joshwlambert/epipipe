@@ -1,0 +1,84 @@
+---
+title: "{epipipe} Case Studies"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{{epipipe} Case Studies}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(epipipe)
+```
+
+### Linelist -> Incidence -> Case Severity/Fatality
+
+```{r, eval=FALSE}
+set.seed(1)
+import(
+  x = simulist::sim_linelist, 
+  R = 1, 
+  serial_interval = \(x) dgamma(x = x, shape = 2, scale = 2), 
+  onset_to_death = \(x) dlnorm(x = x, meanlog = 3, sdlog = 3), 
+  onset_to_hosp = \(x) dlnorm(x = x, meanlog = 3, sdlog = 3)
+) |>
+  transform(transformation = "aggregrate") |>
+  analyse(analysis = "severity")
+```
+
+### Linelist + Contacts -> Secondary Contacts -> Offspring distribution
+
+```{r, eval=FALSE}
+set.seed(1)
+import(
+  x = simulist::sim_outbreak, 
+  R = 1, 
+  serial_interval = \(x) rgamma(n = x, shape = 2, scale = 2), 
+  onset_to_death = \(x) rlnorm(n = x, meanlog = 3, sdlog = 3), 
+  onset_to_hosp = \(x) rlnorm(n = x, meanlog = 3, sdlog = 3),
+  contact_distribution = \(x) rnbinom(n = x, mu = 5, size = 0.5)
+) |>
+  transform(transformation = "secondary_contacts") |>
+  analyse(analysis = "offspring_dist")
+```
+
+### Linelist + Contacts -> Secondary Contacts -> Offspring distribution -> Probability of Epidemic
+
+```{r, eval=FALSE}
+set.seed(1)
+import(
+  x = simulist::sim_outbreak, 
+  R = 1, 
+  serial_interval = \(x) rgamma(n = x, shape = 2, scale = 2), 
+  onset_to_death = \(x) rlnorm(n = x, meanlog = 3, sdlog = 3), 
+  onset_to_hosp = \(x) rlnorm(n = x, meanlog = 3, sdlog = 3),
+  contact_distribution = \(x) rnbinom(n = x, mu = 5, size = 0.5)
+) |>
+  transform(transformation = "secondary_contacts") |>
+  analyse(analysis = "offspring_dist") |>
+  analyse(analysis = "probability_epidemic", num_init_infect = 1)
+```
+
+### Linelist + Contacts -> Secondary Contacts -> Offspring distribution -> Final Size of Epidemic
+
+```{r, eval=FALSE}
+set.seed(1)
+import(
+  x = simulist::sim_outbreak, 
+  R = 1, 
+  serial_interval = \(x) rgamma(n = x, shape = 2, scale = 2), 
+  onset_to_death = \(x) rlnorm(n = x, meanlog = 3, sdlog = 3), 
+  onset_to_hosp = \(x) rlnorm(n = x, meanlog = 3, sdlog = 3),
+  contact_distribution = \(x) rnbinom(n = x, mu = 5, size = 0.5)
+) |>
+  transform(transformation = "secondary_contacts") |>
+  analyse(analysis = "offspring_dist") |>
+  analyse(analysis = "final_size")
+```
