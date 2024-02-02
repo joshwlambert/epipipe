@@ -4,8 +4,11 @@ analyse <- function(x, ...) {
 }
 
 #' @export
-analyse.epi_incidence <- function(x, analysis = c("severity"), ...) {
-
+analyse.epi_incidence <- function(x,
+                                  analysis = c("severity",
+                                               "growth_rate",
+                                               "rolling_average"),
+                                  ...) {
   analysis <- match.arg(analysis)
 
   # TODO: S4 multiple dispatch to solve if ladder
@@ -18,6 +21,21 @@ analyse.epi_incidence <- function(x, analysis = c("severity"), ...) {
     )
     severity <- cfr::cfr_static(data = cfr_tbl)
     return(severity)
+  }
+
+  if (analysis == "growth_rate") {
+    fit <- i2extras::fit_curve(
+      x,
+      model = "negbin",
+      alpha = 0.05
+    )
+    growth_rate <- i2extras::growth_rate(fit)
+    return(growth_rate)
+  }
+
+  if (analysis == "rolling_average") {
+    rolling_average <- i2extras::add_rolling_average(x, n = 7)
+    return(rolling_average)
   }
 
   return(0)
@@ -77,6 +95,24 @@ analyse.epi_offspring_dist <- function(x, analysis, ...) {
 }
 
 #' @export
+analyse.epi_growth_rate <- function(x,
+                                analysis = c("doubling_time", "reproduction_number"),
+                                ...) {
+
+  if (analysis == "doubling_time") {
+    # $$ T = \frac{\log(2)}{r},$$
+  }
+
+  if (analysis == "reproduction_number") {
+    R_mean <- epitrix::r2R0(x$r, density(serial_interval, 1:1000))
+    R_lower <- epitrix::r2R0(x$r_lower, density(serial_interval, 1:1000))
+    R_upper <- epitrix::r2R0(x$r_upper, density(serial_interval, 1:1000))
+  }
+}
+
+#' @export
 analyse.chain <- function(x, analysis, ...) {
 
 }
+
+
