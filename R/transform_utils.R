@@ -25,25 +25,7 @@ as_epi_incidence.data.frame <- function(x, ...) {
   return(x)
 }
 
-#' @export
-as_epi_linelist.list <- function(x, ...) {
-  stopifnot(
-    "list must be a single element containing a line list <data.frame>" =
-      length(x) == 1 && is.data.frame(x[[1]])
-  )
-  class(x) <- c("epi_linelist", class(x))
-  return(x)
-}
 
-#' @export
-as_epi_contacts.list <- function(x, ...) {
-  stopifnot(
-    "list must be a single element containing a contacts <data.frame>" =
-      length(x) == 1 && is.data.frame(x[[1]])
-  )
-  class(x) <- c("epi_contacts", class(x))
-  return(x)
-}
 
 #' @export
 as_epi_outbreak.list <- function(x, ...) {
@@ -53,18 +35,6 @@ as_epi_outbreak.list <- function(x, ...) {
   )
   class(x) <- c("epi_outbreak", class(x))
   return(x)
-}
-
-#' @export
-as_epi_linelist.linelist <- function(x, ...) {
-  linelist::validate_linelist(x, ...)
-  class(x) <- c("epi_linelist", class(x))
-  return(x)
-}
-
-#' @export
-as_epi_contacts.linelist <- function(x, ...) {
-  stop()
 }
 
 #' @export
