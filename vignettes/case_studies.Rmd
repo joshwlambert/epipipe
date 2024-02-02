@@ -82,3 +82,44 @@ import(
   analyse(analysis = "offspring_dist") |>
   analyse(analysis = "final_size")
 ```
+
+### Line list -> Incidence -> Rolling Average
+
+```{r, eval=FALSE}
+outbreaks::ebola_sim_clean$linelist |>
+  linelist::make_linelist(
+    id = "case_id", 
+    date_onset = "date_of_onset", 
+    gender = "gender",
+    outcome = "outcome",
+    allow_extra = TRUE
+  ) |> 
+  as_epi_linelist() |>
+  transform(
+    date_index = "date_onset",
+    interval = "day",
+    groups = "gender") |>
+  analyse(analysis = "rolling_average")
+```
+
+### Line list -> Incidence -> Growth Rate
+
+```{r, eval=FALSE}
+ebola_df <- outbreaks::ebola_sim_clean$linelist
+ebola_linelist <- linelist::make_linelist(
+  ebola_df, 
+  id = "case_id", 
+  date_onset = "date_of_onset", 
+  gender = "gender",
+  outcome = "outcome",
+  allow_extra = TRUE
+)
+linelist::validate_tags(ebola_linelist, allow_extra = TRUE)
+ebola_inci <- incidence2::incidence(
+  x = linelist::tags_df(ebola_linelist), 
+  date_index = "date_onset",
+  interval = "day",
+  groups = "gender"
+)
+rolling_avg <- i2extras::add_rolling_average(ebola_inci, n = 7)
+```
