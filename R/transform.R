@@ -10,14 +10,17 @@
 #'
 #' @return An \R object
 #' @export
-transform.epi_linelist <- function(`_data`, transformation = c("aggregate"), ...) {
-
+transform.epi_linelist <- function(`_data`,
+                                   transformation = c("aggregate"),
+                                   ...) {
   transformation <- match.arg(transformation)
 
   if (transformation == "aggregate") {
     args <- list(
       date_index = c("date_onset", "date_death"),
-      interval = "daily"
+      interval = "daily",
+      groups = NULL,
+      counts = NULL
     )
 
     args <- modifyList(args, list(...))
@@ -26,7 +29,8 @@ transform.epi_linelist <- function(`_data`, transformation = c("aggregate"), ...
       x = `_data`,
       date_index = args$date_index,
       interval = args$interval,
-      ...
+      groups = args$groups,
+      counts = args$counts
     )
 
     class(incidence) <- c("epi_incidence", class(incidence))
