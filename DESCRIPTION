@@ -57,7 +57,8 @@ Imports:
     incidence2,
     fitdistrplus,
     finalsize,
-    superspreading
+    superspreading,
+    linelist
 Remotes: 
     epiverse-trace/simulist,
     epiverse-trace/epiparameter,
