@@ -29,7 +29,7 @@ import(
   onset_to_death = \(x) dlnorm(x = x, meanlog = 3, sdlog = 3), 
   onset_to_hosp = \(x) dlnorm(x = x, meanlog = 3, sdlog = 3)
 ) |>
-  transform(transformation = "aggregrate") |>
+  transform(transformation = "aggregate") |>
   analyse(analysis = "severity")
 ```
 
