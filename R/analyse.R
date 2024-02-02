@@ -4,7 +4,9 @@ analyse <- function(x, ...) {
 }
 
 #' @export
-analyse.incidence2 <- function(x, analysis, ...) {
+analyse.epi_incidence <- function(x, analysis = c("severity"), ...) {
+
+  analysis <- match.arg(analysis)
 
   # TODO: S4 multiple dispatch to solve if ladder
 
@@ -22,12 +24,15 @@ analyse.incidence2 <- function(x, analysis, ...) {
 }
 
 #' @export
-analyse.secondary_contacts <- function(x, analysis, ...) {
+analyse.epi_secondary_contacts <- function(x, analysis = c("offspring_dist"), ...) {
+
+  analysis <- match.arg(analysis)
+
   if (analysis == "offspring_dist") {
     offspring <- fitdistrplus::fitdist(data = unclass(x), distr = "nbinom")
     names(offspring$estimate) <- c("k", "R")
     offspring <- offspring$estimate[c("R", "k")]
-    class(offspring) <- c("offspring_dist", class(offspring))
+    class(offspring) <- c("epi_offspring_dist", class(offspring))
     return(offspring)
   }
 
@@ -36,7 +41,8 @@ analyse.secondary_contacts <- function(x, analysis, ...) {
 }
 
 #' @export
-analyse.offspring_dist <- function(x, analysis, ...) {
+analyse.epi_offspring_dist <- function(x, analysis, ...) {
+
   if (analysis == "probability_epidemic") {
     prob_epidemic <- superspreading::probability_epidemic(
       R = x[["R"]], k = x[["k"]], ...
@@ -66,7 +72,6 @@ analyse.offspring_dist <- function(x, analysis, ...) {
     )
     return(final_size)
   }
-
 
   return(0)
 }
