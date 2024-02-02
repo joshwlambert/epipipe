@@ -56,7 +56,8 @@ as_epi_outbreak.list <- function(x, ...) {
 
 #' @export
 as_epi_linelist.linelist <- function(x, ...) {
-  linelist::validate_linelist(x, ...)
+  x <- linelist::validate_linelist(x, ...)
+  x <- linelist::tags_df(x, ...)
   class(x) <- c("epi_linelist", class(x))
   return(x)
 }
