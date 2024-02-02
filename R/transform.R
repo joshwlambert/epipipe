@@ -10,7 +10,9 @@
 #'
 #' @return An \R object
 #' @export
-transform.linelist <- function(`_data`, transformation, ...) {
+transform.epi_linelist <- function(`_data`, transformation = c("aggregate"), ...) {
+
+  transformation <- match.arg(transformation)
 
   if (transformation == "aggregate") {
     args <- list(
@@ -27,6 +29,8 @@ transform.linelist <- function(`_data`, transformation, ...) {
       ...
     )
 
+    class(incidence) <- c("epi_incidence", class(incidence))
+
     return(incidence)
   }
 
@@ -34,7 +38,64 @@ transform.linelist <- function(`_data`, transformation, ...) {
     second_contacts <- table(`_data`$contacts$from, `_data`$contacts$was_case)
     second_contacts_infect <- second_contacts[, "Y"]
     class(second_contacts_infect) <- c(
-      "secondary_contacts", class(second_contacts_infect)
+      "epi_secondary_contacts", class(second_contacts_infect)
+    )
+    return(second_contacts_infect)
+  }
+
+  return(0)
+}
+
+#' @export
+transform.epi_contacts <- function(`_data`, transformation = c("secondary_contacts"), ...) {
+
+  transformation <- match.arg(transformation)
+
+  if (transformation == "secondary_contacts") {
+    second_contacts <- table(`_data`$contacts$from, `_data`$contacts$was_case)
+    second_contacts_infect <- second_contacts[, "Y"]
+    class(second_contacts_infect) <- c(
+      "ep_secondary_contacts", class(second_contacts_infect)
+    )
+    return(second_contacts_infect)
+  }
+
+  return(0)
+}
+
+#' @export
+transform.epi_outbreak <- function(`_data`,
+                                   transformation = c("aggregate",
+                                                      "secondary_contacts"),
+                                   ...) {
+
+  # TODO: maybe add ep_ prefix to class names to not confuse with other classes with same name
+
+  if (transformation == "aggregate") {
+    args <- list(
+      date_index = c("date_onset", "date_death"),
+      interval = "daily"
+    )
+
+    args <- modifyList(args, list(...))
+
+    incidence <- incidence2::incidence(
+      x = `_data`,
+      date_index = args$date_index,
+      interval = args$interval,
+      ...
+    )
+
+    class(incidence) <- c("epi_incidence", class(incidence))
+
+    return(incidence)
+  }
+
+  if (transformation == "secondary_contacts") {
+    second_contacts <- table(`_data`$contacts$from, `_data`$contacts$was_case)
+    second_contacts_infect <- second_contacts[, "Y"]
+    class(second_contacts_infect) <- c(
+      "epi_secondary_contacts", class(second_contacts_infect)
     )
     return(second_contacts_infect)
   }
